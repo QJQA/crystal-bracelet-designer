@@ -177,27 +177,47 @@ h2 { margin-bottom: 0; font-size: 21px; letter-spacing: -.03em; }
   font-weight: 650;
 }
 .product-inline-search input::placeholder { color: #b7afbc; font-weight: 500; }
-.search-options {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+.size-filter-row {
+  display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 13px;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 0 2px;
 }
-.search-options label { color: var(--muted); font-size: 12px; font-weight: 650; }
-.search-options select {
-  width: 100%;
-  min-height: 42px;
+.size-filter-label {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+.size-filter-options {
+  min-width: 0;
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 2px 1px;
+  scrollbar-width: none;
+}
+.size-filter-options::-webkit-scrollbar { display: none; }
+.size-filter-chip {
+  flex: 0 0 auto;
+  min-width: 50px;
+  min-height: 34px;
   border: 1px solid var(--line);
-  border-radius: 13px;
-  padding: 0 35px 0 12px;
-  outline: 0;
+  border-radius: 999px;
+  padding: 0 12px;
   color: var(--ink);
-  background: white;
-  font-size: 13px;
-  font-weight: 650;
+  background: #fbf9fc;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: color .15s ease, border-color .15s ease, background .15s ease;
 }
-.search-options select:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(114, 87, 213, .1); }
+.size-filter-chip.active {
+  border-color: #cfc1fb;
+  color: var(--purple-dark);
+  background: var(--lavender);
+}
 
 .primary-button, .secondary-button {
   border: 0;
@@ -433,9 +453,22 @@ h2 { margin-bottom: 0; font-size: 21px; letter-spacing: -.03em; }
 .quote-line span { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
 .quote-line .line-money { color: var(--ink); font-size: 14px; }
 .remove-line { width: 28px; height: 28px; border: 0; border-radius: 50%; color: var(--danger); background: #fbe9ec; }
-.fee-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-top: 16px; }
-.fee-grid label { color: var(--muted); font-size: 11px; }
-.fee-grid input { width: 100%; margin-top: 6px; border: 1px solid var(--line); border-radius: 12px; padding: 11px; outline: 0; }
+.discount-editor { margin-top: 16px; padding: 14px; border-radius: 18px; background: #f8f5f9; }
+.discount-editor-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.discount-editor-head > strong { font-size: 13px; }
+.discount-mode-tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3px; padding: 3px; border-radius: 11px; background: #ece6ef; }
+.discount-mode-tab { min-height: 32px; border: 0; border-radius: 9px; padding: 0 12px; color: var(--muted); background: transparent; font-size: 11px; font-weight: 750; }
+.discount-mode-tab.active { color: var(--purple-dark); background: white; box-shadow: 0 4px 11px rgba(58, 44, 70, .08); }
+.discount-panel { margin-top: 13px; }
+.discount-panel > label { display: block; margin-bottom: 6px; color: var(--muted); font-size: 11px; }
+.discount-money-input { display: grid; grid-template-columns: auto 1fr; align-items: center; border: 1px solid var(--line); border-radius: 13px; background: white; overflow: hidden; }
+.discount-money-input span { padding-left: 13px; color: var(--muted); font-size: 14px; font-weight: 700; }
+.discount-money-input input { width: 100%; min-width: 0; border: 0; outline: 0; padding: 12px 13px 12px 7px; color: var(--ink); background: transparent; font-size: 15px; font-weight: 750; }
+.discount-rate-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.discount-rate-chip { min-height: 42px; border: 1px solid var(--line); border-radius: 13px; color: var(--ink); background: white; font-size: 14px; font-weight: 800; }
+.discount-rate-chip.active { border-color: var(--purple); color: white; background: var(--purple); box-shadow: 0 7px 16px rgba(114, 87, 213, .2); }
+.discount-panel > p { margin: 10px 1px 0; color: var(--muted); font-size: 11px; }
+.discount-panel > p strong { color: var(--purple-dark); }
 .quote-summary { display: grid; gap: 10px; margin-top: 17px; padding-top: 16px; border-top: 1px solid var(--line); }
 .quote-summary > div { display: flex; justify-content: space-between; color: var(--muted); font-size: 13px; }
 .quote-summary .grand-total { align-items: flex-end; padding-top: 5px; color: var(--ink); }

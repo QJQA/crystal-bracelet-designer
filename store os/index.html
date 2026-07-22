@@ -52,9 +52,9 @@
               <input id="trayCodeInput" inputmode="numeric" autocomplete="off" maxlength="3" placeholder="例如 01" aria-label="托盘编号" />
               <button type="submit" class="primary-button compact">查找</button>
             </form>
-            <div class="search-options">
-              <label for="traySizeFilter">尺寸</label>
-              <select id="traySizeFilter" aria-label="筛选托盘内商品尺寸"><option value="">全部尺寸</option></select>
+            <div class="size-filter-row" id="traySizeFilter" role="group" aria-label="筛选托盘内商品尺寸">
+              <span class="size-filter-label">尺寸</span>
+              <div class="size-filter-options"></div>
             </div>
             <p class="form-hint" id="searchHint">输入托盘上可见的编号，不需要记商品 SKU。</p>
 
@@ -75,9 +75,9 @@
               <input id="productSearchInput" autocomplete="off" placeholder="紫水晶、SKU 或别名" aria-label="商品名称或 SKU" />
               <button type="submit" class="primary-button compact">查找</button>
             </form>
-            <div class="search-options">
-              <label for="productSizeFilter">尺寸</label>
-              <select id="productSizeFilter" aria-label="筛选商品尺寸"><option value="">全部尺寸</option></select>
+            <div class="size-filter-row" id="productSizeFilter" role="group" aria-label="筛选商品尺寸">
+              <span class="size-filter-label">尺寸</span>
+              <div class="size-filter-options"></div>
             </div>
             <p class="form-hint" id="productSearchHint">可按中文名称、拼音 SKU、别名和尺寸组合查找。</p>
           </div>
@@ -194,14 +194,30 @@
       <button class="text-button danger" id="clearQuote">清空</button>
     </div>
     <div class="quote-lines" id="quoteLines"></div>
-    <div class="fee-grid">
-      <label>手工费<input id="laborFee" inputmode="decimal" value="0" /></label>
-      <label>优惠金额<input id="discountFee" inputmode="decimal" value="0" /></label>
+    <div class="discount-editor">
+      <div class="discount-editor-head">
+        <strong>优惠方式</strong>
+        <div class="discount-mode-tabs" role="tablist" aria-label="优惠方式">
+          <button type="button" class="discount-mode-tab active" data-discount-mode="amount" aria-selected="true">金额</button>
+          <button type="button" class="discount-mode-tab" data-discount-mode="rate" aria-selected="false">按比例</button>
+        </div>
+      </div>
+      <div class="discount-panel" id="discountAmountPanel">
+        <label for="discountFee">优惠金额</label>
+        <div class="discount-money-input"><span>¥</span><input id="discountFee" inputmode="decimal" value="0" aria-label="优惠金额" /></div>
+      </div>
+      <div class="discount-panel hidden" id="discountRatePanel">
+        <div class="discount-rate-options" role="group" aria-label="优惠比例">
+          <button type="button" class="discount-rate-chip" data-rate="0.05">5%</button>
+          <button type="button" class="discount-rate-chip" data-rate="0.10">10%</button>
+          <button type="button" class="discount-rate-chip" data-rate="0.15">15%</button>
+        </div>
+        <p>按材料金额计算，本次优惠 <strong id="discountRateAmount">¥0</strong></p>
+      </div>
     </div>
     <div class="quote-summary">
       <div><span>材料金额</span><span id="materialTotal">¥0</span></div>
-      <div><span>手工费</span><span id="laborTotal">¥0</span></div>
-      <div><span>优惠</span><span id="discountTotal">−¥0</span></div>
+      <div><span id="discountSummaryLabel">优惠</span><span id="discountTotal">−¥0</span></div>
       <div class="grand-total"><span>最终报价</span><strong id="grandTotal">¥0</strong></div>
     </div>
     <p class="stock-note">保存报价不会扣库存，确认成交后才会扣减来源托盘库存。</p>

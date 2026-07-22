@@ -30,6 +30,8 @@ let quote = [];
 let selected = null;
 let activeTray = null;
 let activeSearchMode = "tray";
+let discountMode = "amount";
+let discountRate = 0;
 let recentTrays = ["01", "02", "03"];
 let toastTimer;
 
@@ -74,14 +76,29 @@ function stoneThumb(product) {
   return `<span class="stone-thumb stone-${product.stone || "purple"}" aria-hidden="true"></span>`;
 }
 
+function selectedSize(filterId) {
+  return $(`#${filterId} .size-filter-chip.active`)?.dataset.size || "";
+}
+
+function setSelectedSize(filterId, size) {
+  $$(`#${filterId} .size-filter-chip`).forEach(button => {
+    const active = button.dataset.size === size;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+}
+
 function renderSizeOptions() {
   const sizes = [...new Set(state.products.map(product => product.size))]
     .sort((a, b) => (Number.parseFloat(a) || 0) - (Number.parseFloat(b) || 0));
   ["traySizeFilter", "productSizeFilter"].forEach(id => {
-    const select = $(`#${id}`);
-    const current = select.value;
-    select.innerHTML = `<option value="">全部尺寸</option>${sizes.map(size => `<option value="${size}">${size}</option>`).join("")}`;
-    select.value = sizes.includes(current) ? current : "";
+    const current = selectedSize(id);
+    const options = $(`#${id} .size-filter-options`);
+    options.innerHTML = ["", ...sizes].map(size => {
+      const label = size || "全部";
+      const active = size === current || (!current && !size);
+      return `<button type="button" class="size-filter-chip${active ? " active" : ""}" data-size="${size}" aria-pressed="${active}">${label}</button>`;
+    }).join("");
   });
 }
 
@@ -93,7 +110,7 @@ function renderRecentTrays() {
 function showTray(rawCode, { scroll = true } = {}) {
   const code = normalizeTray(rawCode);
   const allRows = trayRows(code);
-  const size = $("#traySizeFilter").value;
+  const size = selectedSize("traySizeFilter");
   const rows = allRows.filter(row => !size || productBySku(row.sku)?.size === size);
   const hint = $("#searchHint");
   if (!allRows.length) {
@@ -176,15 +193,19 @@ function quoteMaterialTotal() {
 }
 
 function currentFees() {
+  const material = quoteMaterialTotal();
+  const rawDiscount = discountMode === "rate"
+    ? material * discountRate
+    : Math.max(0, Number($("#discountFee")?.value) || 0);
   return {
-    labor: Math.max(0, Number($("#laborFee")?.value) || 0),
-    discount: Math.max(0, Number($("#discountFee")?.value) || 0),
+    labor: 0,
+    discount: Number(Math.min(material, rawDiscount).toFixed(2)),
   };
 }
 
 function finalTotal() {
   const fees = currentFees();
-  return Math.max(0, quoteMaterialTotal() + fees.labor - fees.discount);
+  return Math.max(0, quoteMaterialTotal() - fees.discount);
 }
 
 function renderQuote() {
@@ -213,9 +234,40 @@ function renderQuote() {
 function renderTotals() {
   const fees = currentFees();
   $("#materialTotal").textContent = money(quoteMaterialTotal());
-  $("#laborTotal").textContent = money(fees.labor);
   $("#discountTotal").textContent = `−${money(fees.discount)}`;
+  $("#discountRateAmount").textContent = money(discountMode === "rate" ? fees.discount : quoteMaterialTotal() * discountRate);
+  $("#discountSummaryLabel").textContent = discountMode === "rate" && discountRate
+    ? `优惠（${Math.round(discountRate * 100)}%）`
+    : "优惠";
   $("#grandTotal").textContent = money(finalTotal());
+}
+
+function setDiscountMode(mode) {
+  discountMode = mode;
+  $$(".discount-mode-tab").forEach(button => {
+    const active = button.dataset.discountMode === mode;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-selected", String(active));
+  });
+  $("#discountAmountPanel").classList.toggle("hidden", mode !== "amount");
+  $("#discountRatePanel").classList.toggle("hidden", mode !== "rate");
+  renderTotals();
+}
+
+function setDiscountRate(rate) {
+  discountRate = rate;
+  $$(".discount-rate-chip").forEach(button => {
+    const active = Number(button.dataset.rate) === rate;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+  renderTotals();
+}
+
+function resetDiscount() {
+  $("#discountFee").value = 0;
+  setDiscountRate(0);
+  setDiscountMode("amount");
 }
 
 function confirmSale() {
@@ -234,15 +286,16 @@ function confirmSale() {
     createdAt: now.toISOString(),
     lines: clone(quote),
     material: quoteMaterialTotal(),
-    labor: fees.labor,
+    labor: 0,
     discount: fees.discount,
+    discountType: discountMode,
+    discountRate: discountMode === "rate" ? discountRate : 0,
     total: finalTotal(),
     status: "已成交",
   });
   persist();
   quote = [];
-  $("#laborFee").value = 0;
-  $("#discountFee").value = 0;
+  resetDiscount();
   closeSheets();
   renderAll();
   showToast("成交成功，来源托盘库存已扣减");
@@ -290,7 +343,7 @@ function renderOrders() {
 
 function renderProductSearchResults() {
   const term = $("#productSearchInput").value.trim().toLowerCase();
-  const size = $("#productSizeFilter").value;
+  const size = selectedSize("productSizeFilter");
   const products = state.products.filter(product => {
     const matchesTerm = !term || [product.name, product.size, product.grade, product.sku, product.aliases].join(" ").toLowerCase().includes(term);
     return matchesTerm && (!size || product.size === size);
@@ -380,7 +433,10 @@ $("#traySearchForm").addEventListener("submit", event => {
   event.preventDefault();
   showTray($("#trayCodeInput").value);
 });
-$("#traySizeFilter").addEventListener("change", () => {
+$("#traySizeFilter").addEventListener("click", event => {
+  const button = event.target.closest(".size-filter-chip");
+  if (!button) return;
+  setSelectedSize("traySizeFilter", button.dataset.size);
   if (activeTray) showTray(activeTray, { scroll: false });
 });
 $("#productSearchForm").addEventListener("submit", event => {
@@ -388,11 +444,16 @@ $("#productSearchForm").addEventListener("submit", event => {
   renderProductSearchResults();
 });
 $("#productSearchInput").addEventListener("input", renderProductSearchResults);
-$("#productSizeFilter").addEventListener("change", renderProductSearchResults);
+$("#productSizeFilter").addEventListener("click", event => {
+  const button = event.target.closest(".size-filter-chip");
+  if (!button) return;
+  setSelectedSize("productSizeFilter", button.dataset.size);
+  renderProductSearchResults();
+});
 $$(".search-mode-tab").forEach(button => button.addEventListener("click", () => switchSearchMode(button.dataset.searchMode)));
 $("#clearProductSearch").addEventListener("click", () => {
   $("#productSearchInput").value = "";
-  $("#productSizeFilter").value = "";
+  setSelectedSize("productSizeFilter", "");
   renderProductSearchResults();
   $("#productSearchInput").focus();
 });
@@ -416,9 +477,10 @@ $("#increaseQty").addEventListener("click", () => {
 $("#quantityInput").addEventListener("input", updateQuantityPreview);
 $("#addToQuote").addEventListener("click", addSelectedToQuote);
 $("#cartBar").addEventListener("click", () => { renderQuote(); openSheet("quoteSheet"); });
-$("#laborFee").addEventListener("input", renderTotals);
 $("#discountFee").addEventListener("input", renderTotals);
-$("#clearQuote").addEventListener("click", () => { quote = []; renderQuote(); closeSheets(); showToast("报价单已清空"); });
+$$(".discount-mode-tab").forEach(button => button.addEventListener("click", () => setDiscountMode(button.dataset.discountMode)));
+$$(".discount-rate-chip").forEach(button => button.addEventListener("click", () => setDiscountRate(Number(button.dataset.rate))));
+$("#clearQuote").addEventListener("click", () => { quote = []; resetDiscount(); renderQuote(); closeSheets(); showToast("报价单已清空"); });
 $("#saveQuote").addEventListener("click", saveQuote);
 $("#confirmSale").addEventListener("click", confirmSale);
 $("#sheetBackdrop").addEventListener("click", closeSheets);

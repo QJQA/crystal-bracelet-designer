@@ -143,8 +143,11 @@ function renderOrders() {
   $("#orderTableHint").textContent = `${state.orders.length} 笔成交记录`;
   $("#orderTableBody").innerHTML = state.orders.map(order => {
     const detail = order.lines.map(line => { const product = productBySku(line.sku); return `T${line.tray} ${product?.name || line.sku}${product?.size || ""} × ${line.quantity}`; }).join("；");
-    return `<tr><td><strong>${order.id}</strong></td><td>${formatDate(order.createdAt)}</td><td>${detail}</td><td>${money(order.material)}</td><td>${money(order.labor)}</td><td>${money(order.discount)}</td><td><strong>${money(order.total)}</strong></td><td><span class="status-badge">${order.status}</span></td></tr>`;
-  }).join("") || `<tr><td class="empty-table" colspan="8">暂无成交记录；请在手机端完成一笔报价。</td></tr>`;
+    const discount = order.discountType === "rate" && order.discountRate
+      ? `${Math.round(order.discountRate * 100)}% · ${money(order.discount)}`
+      : money(order.discount);
+    return `<tr><td><strong>${order.id}</strong></td><td>${formatDate(order.createdAt)}</td><td>${detail}</td><td>${money(order.material)}</td><td>${discount}</td><td><strong>${money(order.total)}</strong></td><td><span class="status-badge">${order.status}</span></td></tr>`;
+  }).join("") || `<tr><td class="empty-table" colspan="7">暂无成交记录；请在手机端完成一笔报价。</td></tr>`;
 }
 
 function formatDate(value) {
