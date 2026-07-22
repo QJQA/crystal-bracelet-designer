@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#20182c" />
+  <title>晶石店铺助手 · 管理后台</title>
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="sidebar">
+      <a class="brand" href="admin.html">
+        <span class="brand-mark">晶</span>
+        <span><strong>晶石店铺助手</strong><small>CRYSTAL STORE OS</small></span>
+      </a>
+
+      <nav class="side-nav" aria-label="后台导航">
+        <button class="side-nav-item active" data-page="dashboardPage" data-title="经营概览">
+          <svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v10h-6zM4 14h6v6H4zM14 18h6v2h-6z"/></svg>
+          <span>经营概览</span>
+        </button>
+        <button class="side-nav-item" data-page="productsPage" data-title="SKU 商品">
+          <svg viewBox="0 0 24 24"><path d="m4 7 8-4 8 4-8 4-8-4Zm0 0v10l8 4 8-4V7M12 11v10"/></svg>
+          <span>SKU 商品</span><em id="productNavCount">0</em>
+        </button>
+        <button class="side-nav-item" data-page="traysPage" data-title="托盘库存">
+          <svg viewBox="0 0 24 24"><path d="M4 6h16v4H4zM5 10h14v10H5zM9 14h6"/></svg>
+          <span>托盘库存</span><em id="trayNavCount">0</em>
+        </button>
+        <button class="side-nav-item" data-page="importPage" data-title="Excel 数据导入">
+          <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L8 8m4-4 4 4M5 14v6h14v-6"/></svg>
+          <span>Excel 导入</span>
+        </button>
+        <button class="side-nav-item" data-page="ordersPage" data-title="销售记录">
+          <svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Zm3 5h6M9 12h6"/></svg>
+          <span>销售记录</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="sync-card"><span class="pulse"></span><div><strong>双端数据已连接</strong><small>浏览器本地演示数据</small></div></div>
+        <a href="index.html" class="mobile-entry">
+          <span>打开手机操作端</span>
+          <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        </a>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="admin-topbar">
+        <div>
+          <p class="breadcrumb">晶石店铺 / <span id="breadcrumbTitle">经营概览</span></p>
+          <h1 id="pageTitle">经营概览</h1>
+        </div>
+        <div class="topbar-tools">
+          <label class="global-search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+            <input id="globalSearch" placeholder="搜索商品、SKU或托盘" />
+          </label>
+          <button class="ghost-button" id="resetAdminDemo">重置演示</button>
+          <div class="profile"><span>店</span><div><strong>Jadebloom</strong><small>店主账号</small></div></div>
+        </div>
+      </header>
+
+      <main class="admin-main">
+        <section class="admin-page active" id="dashboardPage">
+          <div class="page-lead">
+            <div><p class="kicker">TODAY</p><h2>店铺经营一目了然</h2><p>商品、托盘、报价与库存使用同一套数据。</p></div>
+            <button class="primary-action" data-new-product>＋ 新增商品</button>
+          </div>
+
+          <div class="kpi-grid" id="dashboardKpis"></div>
+
+          <div class="dashboard-grid">
+            <section class="panel wide-panel">
+              <div class="panel-heading"><div><p class="kicker">INVENTORY</p><h3>重点库存</h3></div><button class="link-button" data-jump="productsPage">查看全部</button></div>
+              <div class="stock-overview" id="dashboardStock"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-heading"><div><p class="kicker">TRAYS</p><h3>托盘分布</h3></div><button class="link-button" data-jump="traysPage">管理托盘</button></div>
+              <div class="tray-map" id="dashboardTrays"></div>
+            </section>
+            <section class="panel wide-panel">
+              <div class="panel-heading"><div><p class="kicker">RECENT SALES</p><h3>最近销售</h3></div><button class="link-button" data-jump="ordersPage">销售记录</button></div>
+              <div id="dashboardOrders"></div>
+            </section>
+            <section class="panel guide-panel">
+              <span class="guide-number">01</span>
+              <p class="kicker">DEMO FLOW</p>
+              <h3>建议先体验双端联动</h3>
+              <p>在后台修改紫水晶价格，再到手机端输入01；完成成交后回到后台查看库存变化。</p>
+              <a href="index.html">进入手机操作端 →</a>
+            </section>
+          </div>
+        </section>
+
+        <section class="admin-page" id="productsPage">
+          <div class="page-lead compact-lead">
+            <div><p class="kicker">PRODUCT LIBRARY</p><h2>SKU 商品库</h2><p>价格属于 SKU，多个托盘中的同款商品会同步使用。</p></div>
+            <button class="primary-action" data-new-product>＋ 新增商品</button>
+          </div>
+          <section class="panel table-panel">
+            <div class="table-toolbar">
+              <label class="table-search"><span>⌕</span><input id="productSearch" placeholder="搜索名称、拼音缩写或SKU" /></label>
+              <div class="table-filters">
+                <button class="filter-button active" data-product-filter="all">全部</button>
+                <button class="filter-button" data-product-filter="low">库存偏低</button>
+                <button class="filter-button" data-product-filter="主珠">主珠</button>
+                <button class="filter-button" data-product-filter="配珠">配珠</button>
+              </div>
+              <a class="export-button" href="data/手串商品与托盘库存_导入模板.xlsx" download>下载 Excel 模板</a>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>商品</th><th>SKU</th><th>分类</th><th>成本</th><th>售价</th><th>总库存</th><th>托盘位置</th><th>状态</th><th></th></tr></thead>
+                <tbody id="productTableBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section class="admin-page" id="traysPage">
+          <div class="page-lead compact-lead">
+            <div><p class="kicker">PHYSICAL LOCATIONS</p><h2>托盘库存</h2><p>托盘表示“放在哪里”，SKU表示“是什么商品”。</p></div>
+            <button class="primary-action" id="addTrayButton">＋ 新增托盘</button>
+          </div>
+          <div class="tray-summary" id="traySummaryCards"></div>
+          <section class="panel table-panel">
+            <div class="table-toolbar"><div><strong>全部托盘明细</strong><small>点击“调整库存”可模拟盘点修正</small></div></div>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>托盘</th><th>位置/商品</th><th>SKU</th><th>当前库存</th><th>商品总库存</th><th>销售单价</th><th></th></tr></thead>
+                <tbody id="trayTableBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section class="admin-page" id="importPage">
+          <div class="page-lead compact-lead"><div><p class="kicker">BATCH ONBOARDING</p><h2>Excel 数据导入</h2><p>商品身份和托盘库存分开导入，系统先校验、预览，再正式写入。</p></div></div>
+          <div class="import-layout">
+            <section class="panel import-card">
+              <div class="import-icon">XLSX</div>
+              <h3>上传商品与托盘库存</h3>
+              <p>请使用标准模板，保留“SKU商品表”和“托盘库存表”的字段名称。</p>
+              <label class="upload-zone" for="excelFile">
+                <span class="upload-symbol">↑</span>
+                <strong>拖入文件或点击选择</strong>
+                <small>支持 .xlsx · Demo仅展示导入预览</small>
+              </label>
+              <input type="file" id="excelFile" accept=".xlsx" hidden />
+              <a class="template-download" href="data/手串商品与托盘库存_导入模板.xlsx" download>下载标准 Excel 模板</a>
+            </section>
+            <section class="panel import-preview">
+              <div class="panel-heading"><div><p class="kicker">PREVIEW</p><h3>导入检查</h3></div><span class="demo-badge">DEMO</span></div>
+              <div id="importPreview" class="empty-preview">
+                <div>等待选择 Excel 文件</div>
+                <p>这里将显示商品数量、托盘库存记录以及错误行。</p>
+              </div>
+            </section>
+          </div>
+          <div class="import-steps">
+            <article><span>1</span><div><strong>填写SKU商品表</strong><p>每个“品种＋尺寸＋品质”建立一个SKU。</p></div></article>
+            <article><span>2</span><div><strong>填写托盘库存表</strong><p>同一SKU可以分布在多个托盘。</p></div></article>
+            <article><span>3</span><div><strong>校验并确认</strong><p>正式系统会检查重复、缺失与错误关联。</p></div></article>
+          </div>
+        </section>
+
+        <section class="admin-page" id="ordersPage">
+          <div class="page-lead compact-lead"><div><p class="kicker">SALES HISTORY</p><h2>销售记录</h2><p>手机端确认成交后，订单和库存变化会同步到这里。</p></div></div>
+          <section class="panel table-panel">
+            <div class="table-toolbar"><div><strong>成交订单</strong><small id="orderTableHint">暂无成交记录</small></div><a class="mobile-outline" href="index.html">去手机端完成一笔报价</a></div>
+            <div class="table-scroll">
+              <table><thead><tr><th>订单号</th><th>成交时间</th><th>商品明细</th><th>材料</th><th>手工费</th><th>优惠</th><th>成交金额</th><th>状态</th></tr></thead><tbody id="orderTableBody"></tbody></table>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="modalBackdrop"></div>
+  <section class="modal hidden" id="productModal" role="dialog" aria-modal="true" aria-labelledby="productModalTitle">
+    <div class="modal-header"><div><p class="kicker">PRODUCT PROFILE</p><h2 id="productModalTitle">编辑商品</h2></div><button class="modal-close" data-close-modal>×</button></div>
+    <form id="productForm">
+      <input type="hidden" id="editingSku" />
+      <div class="product-form-layout">
+        <div class="image-uploader"><div class="stone-placeholder">◌</div><strong>商品档案图</strong><small>绑定SKU，用于手机端确认商品</small><button type="button">上传图片</button></div>
+        <div class="form-grid">
+          <label>产品名称<input id="editName" required /></label>
+          <label>SKU编码<input id="editSku" required placeholder="例如 zsj-08-a" /></label>
+          <label>分类<select id="editCategory"><option>主珠</option><option>配珠</option><option>隔珠</option><option>吊坠</option><option>配件</option></select></label>
+          <label>尺寸<input id="editSize" required placeholder="例如 8mm" /></label>
+          <label>品质<input id="editGrade" required placeholder="例如 A级" /></label>
+          <label>计价单位<select id="editUnit"><option>颗</option><option>克</option><option>串</option><option>件</option></select></label>
+          <label>进货成本<input id="editCost" type="number" min="0" step="0.01" /></label>
+          <label>标准售价<input id="editPrice" type="number" min="0" step="0.01" required /></label>
+          <label>预警库存<input id="editWarning" type="number" min="0" step="1" /></label>
+          <label>商品别名<input id="editAliases" placeholder="用于搜索" /></label>
+        </div>
+      </div>
+      <div class="modal-actions"><button type="button" class="secondary-action" data-close-modal>取消</button><button type="submit" class="primary-action">保存商品</button></div>
+    </form>
+  </section>
+
+  <div class="admin-toast hidden" id="adminToast"></div>
+  <script src="admin.js"></script>
+</body>
+</html>
