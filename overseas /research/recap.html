@@ -1,0 +1,443 @@
+<title>水晶手串出海调研 · 阶段性复盘</title>
+<style>
+  :root {
+    --paper: #F6F4F0;
+    --paper-raised: #FFFFFF;
+    --ink: #211D1A;
+    --ink-soft: #6E665F;
+    --ink-faint: #9B9288;
+    --line: #E4DFD7;
+    --accent: #6B4E7A;
+    --accent-soft: #EFE7F1;
+    --accent-ink: #4A3557;
+    --good: #3F7A5D;
+    --good-soft: #E4EFE8;
+    --warn: #A8611F;
+    --warn-soft: #F4E8DA;
+  }
+  :root[data-theme="dark"] {
+    --paper: #191613;
+    --paper-raised: #221E1A;
+    --ink: #F1EBE4;
+    --ink-soft: #B8AFA5;
+    --ink-faint: #7D766D;
+    --line: #34302A;
+    --accent: #C39FD3;
+    --accent-soft: #332839;
+    --accent-ink: #E4CEEC;
+    --good: #7FBF9E;
+    --good-soft: #24322A;
+    --warn: #E0A15C;
+    --warn-soft: #3A2B1C;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #191613;
+      --paper-raised: #221E1A;
+      --ink: #F1EBE4;
+      --ink-soft: #B8AFA5;
+      --ink-faint: #7D766D;
+      --line: #34302A;
+      --accent: #C39FD3;
+      --accent-soft: #332839;
+      --accent-ink: #E4CEEC;
+      --good: #7FBF9E;
+      --good-soft: #24322A;
+      --warn: #E0A15C;
+      --warn-soft: #3A2B1C;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: ui-serif, Georgia, "Songti SC", "STSong", serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 56px 24px 96px;
+  }
+
+  header.hero {
+    margin-bottom: 48px;
+  }
+  .eyebrow {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 3px;
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-family: -apple-system, "SF Pro Display", "PingFang SC", "Segoe UI", sans-serif;
+    font-weight: 700;
+    font-size: 34px;
+    letter-spacing: -0.01em;
+    margin: 0 0 14px;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  .hero p {
+    font-size: 16.5px;
+    color: var(--ink-soft);
+    max-width: 62ch;
+    margin: 0;
+  }
+
+  h2.section-title {
+    font-family: -apple-system, "SF Pro Display", "PingFang SC", "Segoe UI", sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 64px 0 28px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* ---- timeline ---- */
+  .timeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .stage {
+    position: relative;
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 20px;
+    padding-bottom: 34px;
+  }
+  .stage:last-child { padding-bottom: 0; }
+  .stage-rail {
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
+  .stage-num {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 13px;
+    font-weight: 600;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+  .stage.is-open .stage-num {
+    border-color: var(--warn);
+    color: var(--warn);
+  }
+  .stage-line {
+    position: absolute;
+    top: 32px;
+    bottom: -34px;
+    left: 50%;
+    width: 1px;
+    background: var(--line);
+    transform: translateX(-50%);
+  }
+  .stage:last-child .stage-line { display: none; }
+
+  .stage-card {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px 22px;
+  }
+  .stage-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .stage-title {
+    font-family: -apple-system, "SF Pro Display", "PingFang SC", "Segoe UI", sans-serif;
+    font-weight: 700;
+    font-size: 16.5px;
+    color: var(--ink);
+  }
+  .tag {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .tag.done { background: var(--good-soft); color: var(--good); }
+  .tag.open { background: var(--warn-soft); color: var(--warn); }
+
+  .stage-card p { margin: 0 0 8px; font-size: 15px; color: var(--ink-soft); }
+  .stage-card p:last-child { margin-bottom: 0; }
+  .stage-card .finding {
+    color: var(--ink);
+  }
+  .stage-card .finding b { color: var(--accent-ink); font-weight: 700; }
+
+  /* ---- agent explainer ---- */
+  .explainer-intro {
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin: 0 0 24px;
+  }
+  .agent-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .agent-card {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 22px;
+  }
+  .agent-card h3 {
+    font-family: -apple-system, "SF Pro Display", "PingFang SC", "Segoe UI", sans-serif;
+    font-size: 16px;
+    margin: 0 0 4px;
+    color: var(--ink);
+  }
+  .agent-card .role {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 3px;
+    margin-bottom: 14px;
+  }
+  .agent-card p { font-size: 14.5px; color: var(--ink-soft); margin: 0 0 10px; }
+  .agent-card .analogy {
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--paper);
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    margin-top: 12px;
+  }
+  .agent-card ul {
+    margin: 10px 0 0;
+    padding-left: 18px;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .agent-card li { margin-bottom: 5px; }
+
+  .fit-note {
+    margin-top: 18px;
+    background: var(--warn-soft);
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-size: 14.5px;
+    color: var(--ink);
+  }
+  .fit-note b { color: var(--warn); }
+
+  /* ---- closing callout ---- */
+  .callout {
+    margin-top: 64px;
+    background: var(--accent-soft);
+    border-radius: 12px;
+    padding: 26px 28px;
+  }
+  .callout h3 {
+    font-family: -apple-system, "SF Pro Display", "PingFang SC", "Segoe UI", sans-serif;
+    font-size: 16px;
+    margin: 0 0 10px;
+    color: var(--accent-ink);
+  }
+  .callout p { font-size: 15px; color: var(--ink); margin: 0; }
+
+  @media (max-width: 600px) {
+    .page { padding: 40px 16px 72px; }
+    h1 { font-size: 27px; }
+    .agent-grid { grid-template-columns: 1fr; }
+    .stage { grid-template-columns: 32px 1fr; gap: 14px; }
+  }
+</style>
+
+<div class="page">
+
+  <header class="hero">
+    <span class="eyebrow">调研复盘 · 8 个阶段</span>
+    <h1>从「串珠工具」到「B2B 供应链」<br />这几轮到底聊出了什么</h1>
+    <p>手串配置器工具做出来之后，讨论方向逐渐转向了海外 B2B 分销生意。这页把中间的每一次转折、每一个关键发现按时间顺序理出来，方便一次看完全貌。</p>
+  </header>
+
+  <h2 class="section-title">调研时间线</h2>
+
+  <div class="timeline">
+
+    <div class="stage">
+      <div class="stage-rail"><div class="stage-num">0</div><div class="stage-line"></div></div>
+      <div class="stage-card">
+        <div class="stage-head">
+          <span class="stage-title">起点：C 端还是 B 端？</span>
+          <span class="tag done">已决策</span>
+        </div>
+        <p class="finding">C 端零售必然伴随<b>样式不符、尺寸不合适的退换货问题</b>，个人运营扛不住。决定放弃 C 端直营，转向服务"会自己定制化再卖给消费者"的 B 端商家。</p>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-rail"><div class="stage-num">1</div><div class="stage-line"></div></div>
+      <div class="stage-card">
+        <div class="stage-head">
+          <span class="stage-title">竞品与市场调研</span>
+          <span class="tag done">已验证</span>
+        </div>
+        <p class="finding">海外确实有人把这行生意做成了完整闭环：免费网页工具（Crystal Weave）→ 高客单价配置器电商（Lucid Compose，$29.99 起）→ 线下连锁体验店（Little Words Project，$35/人）。</p>
+        <p>市场规模上，散珠/耗材市场约 $20-25B，定制珠宝市场规模更大、增速更快（不同报告口径 $1.6B-42B 不等）。</p>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-rail"><div class="stage-num">2</div><div class="stage-line"></div></div>
+      <div class="stage-card">
+        <div class="stage-head">
+          <span class="stage-title">B2B 方向分析</span>
+          <span class="tag done">已验证</span>
+        </div>
+        <p class="finding">散珠供应这一环<b>已经很拥挤</b>——Alibaba 上 1,658+ 家水晶珠供应商，加上 Fire Mountain / Halstead 这类经营几十年的成熟批发商，单纯"倒买倒卖"很难有壁垒。</p>
+        <p>真正的缺口是"太小谈不上工厂直供、又吃不下成熟批发商规模"的<b>小型新入局者</b>这一层——差异化方向是把「配置器工具」和「筛选过的供应」打包卖，目前没有直接竞品在做。</p>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-rail"><div class="stage-num">3</div><div class="stage-line"></div></div>
+      <div class="stage-card">
+        <div class="stage-head">
+          <span class="stage-title">供应商筛选标准</span>
+          <span class="tag done">已产出</span>
+        </div>
+        <p class="finding">整理出三层筛查清单：<b>公司资质</b>（统一社会信用代码、响应速度、视频看厂）→ <b>产品真实性</b>（处理工艺披露、第三方检测、先样后货）→ <b>物理鉴定</b>（放大镜、比重测试、丙酮测试）。</p>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-rail"><div class="stage-num">4</div><div class="stage-line"></div></div>
+      <div class="stage-card">
+        <div class="stage-head">
+          <span class="stage-title">供应商案例：印度还是义乌？</span>
+          <span class="tag done">已决策</span>
+        </div>
+        <p class="finding">National Facets（印度 Jaipur）筛选标准几乎满分，但定位偏中高端——普通圆珠一串 $40+（vs 市面 $9-11），且他们本来就直接对全球批发，插一手当分销商赚不到差价。</p>
+        <p>决定<b>供应端锚定义乌</b>：价格带更贴近目标客户，且作为国内买家有主场优势。</p>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-rail"><div class="stage-num">5</div><div class="stage-line"></div></div>
+      <div class="stage-card">
+        <div class="stage-head">
+          <span class="stage-title">义乌供应链调研</span>
+          <span class="tag done">已验证</span>
+        </div>
+        <p class="finding">水晶珠子集中在国际商贸城<b>一区二三楼</b>；产业规模近万家企业、年产值超千亿。查证了"诚信通"<b>只是入场券</b>（交钱+营业执照即可开通），真正管用的是视频验厂、索要水电单、小批量试单。</p>
+        <p>⚠️ 风险信号：义乌饰品出口对美国、印度依赖度不低，行业报告明确提示两地都面临贸易政策风险。</p>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-rail"><div class="stage-num">6</div><div class="stage-line"></div></div>
+      <div class="stage-card">
+        <div class="stage-head">
+          <span class="stage-title">模式调整：不碰线下</span>
+          <span class="tag done">已决策</span>
+        </div>
+        <p class="finding">用户明确不想处理线下验厂这类麻烦事，精力要放在<b>网站搭建、SEO、社媒</b>上。转向依托 1688 平台的担保交易 + 跨境代发服务商，把物流和资金保障都交给现成的基础设施。</p>
+      </div>
+    </div>
+
+    <div class="stage is-open">
+      <div class="stage-rail"><div class="stage-num">7</div><div class="stage-line"></div></div>
+      <div class="stage-card">
+        <div class="stage-head">
+          <span class="stage-title">单位经济与履约模式深挖</span>
+          <span class="tag done">数字验证</span>
+        </div>
+        <p class="finding">工厂价（$0.9-3/串）到零售价（$9-40/串）之间<b>约有10倍价差空间</b>，模式在数字上是站得住的。</p>
+        <p><b>意外的重要发现</b>：Etsy 散珠评价里排第一的投诉永远是"<b>颜色跟照片不符</b>"——这正好是"策展+真实拍摄+工具所见即所得"能直接打的真实痛点，不是凭空想的概念。</p>
+        <p>同时识别出一个风险：美国海关对"切割过的宝石"按 21% 从价税征收（未加工原石则免税），归类错误代价不小。</p>
+      </div>
+    </div>
+
+    <div class="stage is-open">
+      <div class="stage-rail"><div class="stage-num">8</div></div>
+      <div class="stage-card">
+        <div class="stage-head">
+          <span class="stage-title">当前卡点</span>
+          <span class="tag open">待解决</span>
+        </div>
+        <p class="finding">该用 Sourcing Agent 还是 Dropshipping Agent，取决于目标客户"典型一单下多少钱、多久下一次"——这个数字<b>搜索引擎查不到</b>，需要直接接触真实的海外小商家才能拿到。这是目前唯一一个纯调研解决不了的缺口。</p>
+      </div>
+    </div>
+
+  </div>
+
+  <h2 class="section-title">Sourcing Agent vs Dropshipping Agent 到底是什么</h2>
+  <p class="explainer-intro">这两个词看着像同类东西，其实是完全不同的两种角色，用两个生活里的类比来区分。</p>
+
+  <div class="agent-grid">
+    <div class="agent-card">
+      <span class="role">采购代理</span>
+      <h3>Sourcing Agent</h3>
+      <p>你可以理解成<b>你的私人采购员</b>。你告诉他"我要买100公斤水晶珠子"，他去帮你找工厂、验货、砍价，然后把这一整批货打包运到<b>一个地方</b>（比如你自己的仓库）。</p>
+      <p>货到了之后怎么再分给你的一个个客户，是<b>你自己</b>接下来要处理的事，他不管这一段。</p>
+      <div class="analogy">类比：批发市场里帮你跑腿砍价、把一卡车货给你拉到仓库门口的跑腿师傅。一次服务，交付一整批货。</div>
+      <ul>
+        <li>收费方式：订单总额 3-10% 佣金，或按项目收固定费</li>
+        <li>适合：大额、低频、囤货型采购</li>
+      </ul>
+    </div>
+
+    <div class="agent-card">
+      <span class="role">代发货代理</span>
+      <h3>Dropshipping Agent</h3>
+      <p>你可以理解成<b>帮你管快递的员工</b>。你网站上每接到一个客户订单——哪怕只是一小包珠子——你就把"发给谁、发什么"告诉他，他直接从货源那边打包，<b>直接寄到你客户手上</b>。</p>
+      <p>你自己从头到尾<b>不碰货、不打包、不用去寄快递</b>，只负责转发订单信息。</p>
+      <div class="analogy">类比：帮你把仓库和快递员都包了的代运营团队。每一单单独处理，直接送到最终收件人手上。</div>
+      <ul>
+        <li>收费方式：产品按工厂价（不加价），每单单独收服务费</li>
+        <li>适合：分散地址、小额多次、不想囤货的生意</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="fit-note">
+    <b>该选哪个：</b>如果你的海外客户是"每次小几十到一两百美元、分散在不同地址、隔三差五下单补货"，这个形态更像 Dropshipping Agent 擅长的事——他们本来就是为"很多单、发往很多不同地址"设计的。如果客户是"一次囤几千美元的大货"，则更接近 Sourcing Agent 的服务形态。目前还不知道你的目标客户是哪一种，这也是阶段 8 那个待解决的缺口。
+  </div>
+
+  <div class="callout">
+    <h3>消化完之后</h3>
+    <p>这几轮的结论基本收敛成一句话：模式在数字上和差异化上都站得住，但"该用哪种履约方式"这一个关键变量，需要直接接触几个真实的海外小商家才能拿到答案——纯网上搜索已经查到头了。</p>
+  </div>
+
+</div>
